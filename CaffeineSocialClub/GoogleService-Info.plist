@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDXTa_IpsP35czTa6FEi5WoDi7ciT559TA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>264720370446</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.caffeinesocialclub.CaffeineSocialClub</string>
+	<key>PROJECT_ID</key>
+	<string>caffine-social-club</string>
+	<key>STORAGE_BUCKET</key>
+	<string>caffine-social-club.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:264720370446:ios:b9a99046fa66838f59655f</string>
+	<key>DATABASE_URL</key>
+	<string>https://caffine-social-club-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

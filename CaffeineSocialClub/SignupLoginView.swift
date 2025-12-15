@@ -241,9 +241,9 @@ struct SignupLoginView: View {
     
     private func login() {
         isLoading = true
-        
+        let database = Database.database().reference()
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            isLoading = false
+            
             
             if let error = error {
                 errorMessage = error.localizedDescription
@@ -251,12 +251,26 @@ struct SignupLoginView: View {
                 return
             }
             
-            // Save login state
-            UserDefaults.standard.set(true, forKey: "isLoggedIn")
-            UserDefaults.standard.set(email, forKey: "userEmail")
+            database.child("users").child((result?.user.uid)!).getData { error, snapShot in
+                isLoading = false
+                guard error == nil, let userData = snapShot?.value as? [String: Any] else {
+                    self.errorMessage = "Failed to get user data:"
+                    self.showError = true
+                    return
+                }
+                
+                // Save login state
+                UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                UserDefaults.standard.set(email, forKey: "userEmail")
+                UserDefaults.standard.set(result?.user.uid, forKey: "userId")
+                UserDefaults.standard.set(userData["name"], forKey: "username")
+                
+                // Navigate to home
+                navigateToHome = true
+            }
             
-            // Navigate to home
-            navigateToHome = true
+            
+            
         }
     }
     
@@ -303,8 +317,8 @@ struct SignupLoginView: View {
             isLoading = false
             
             if let error = error {
-                errorMessage = "Failed to save user data: \(error.localizedDescription)"
-                showError = true
+                self.errorMessage = "Failed to save user data: \(error.localizedDescription)"
+                self.showError = true
                 return
             }
             

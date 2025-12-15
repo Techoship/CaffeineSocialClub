@@ -257,10 +257,8 @@ struct ProfileSettingsView: View {
     
     private func downloadUserData() {
         guard let userId = currentUser?.userId else { return }
-        print("msulmangull: 1")
 
         database.child("users").child(userId).getData { error, snapshot in
-            print("msulmangull: 2")
 
             guard error == nil, let userData = snapshot?.value else {
                 DispatchQueue.main.async {
@@ -270,23 +268,16 @@ struct ProfileSettingsView: View {
                 return
             }
 
-            print("msulmangull: 3")
-
             database.child("posts")
                 .queryOrdered(byChild: "userId")
                 .queryEqual(toValue: userId)
                 .observeSingleEvent(of: .value) { postsSnapshot in
-
-                    print("msulmangull: 4")
-                    print("Posts snapshot exists:", postsSnapshot.exists())
 
                     let exportData: [String: Any] = [
                         "user": userData,
                         "posts": postsSnapshot.value ?? [:],
                         "exportDate": Date().ISO8601Format()
                     ]
-
-                    print("msulmangull: 5")
 
                     do {
                         let jsonData = try JSONSerialization.data(
@@ -300,12 +291,10 @@ struct ProfileSettingsView: View {
                             .appendingPathComponent(fileName)
 
                         try jsonData.write(to: url)
-                        print("msulmangull: 6")
 
                         DispatchQueue.main.async {
                             self.exportedFileURL = url
                             self.showShareSheet = true
-                            print("msulmangull: 7")
                         }
 
 
@@ -318,25 +307,6 @@ struct ProfileSettingsView: View {
                 }
         }
     }
-
-    
-//    private func shareFile(url: URL) {
-//        guard let scene = UIApplication.shared.connectedScenes
-//            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
-//              let window = scene.windows.first(where: { $0.isKeyWindow }),
-//              let rootVC = window.rootViewController else {
-//            return
-//        }
-//
-//        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
-//
-//        var topVC = rootVC
-//        while let presented = topVC.presentedViewController {
-//            topVC = presented
-//        }
-//
-//        topVC.present(activityVC, animated: true)
-//    }
 
     
     private func openPrivacyPolicy() {

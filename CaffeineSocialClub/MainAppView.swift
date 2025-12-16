@@ -11,7 +11,6 @@ import FirebaseAuth
 struct MainAppView: View {
     @State private var selectedTab = 0
     @State private var showLogoutAlert = false
-    @State private var showSettings = false
     @State private var navigateToLogin = false
     
     var body: some View {
@@ -20,30 +19,28 @@ struct MainAppView: View {
         } else {
             NavigationView {
                 TabView(selection: $selectedTab) {
-                    HomeView()
+                    
+                    
+                    PostsView()
                         .tabItem {
                             Label("Home", systemImage: "house.fill")
                         }
                         .tag(0)
-                    
-                    PostsView()
+                    ProfileSettingsView()
                         .tabItem {
-                            Label("Posts", systemImage: "text.bubble.fill")
+                            Label("Profile", systemImage: "person.fill")
                         }
                         .tag(1)
+                    HomeView()
+                        .tabItem {
+                            Label("About US", systemImage: "document.fill")
+                        }
+                        .tag(2)
                 }
-                .navigationTitle(selectedTab == 0 ? "Home" : "Posts")
+                .navigationTitle("Caffeine Social Club")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {
-                            showSettings = true
-                        }) {
-                            Image(systemName: "gearshape.fill")
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    
+                   
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: {
                             showLogoutAlert = true
@@ -60,9 +57,6 @@ struct MainAppView: View {
                     }
                 } message: {
                     Text("Are you sure you want to logout?")
-                }
-                .sheet(isPresented: $showSettings) {
-                    ProfileSettingsView()
                 }
             }
         }

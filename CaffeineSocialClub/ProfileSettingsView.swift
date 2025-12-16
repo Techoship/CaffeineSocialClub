@@ -204,15 +204,6 @@ struct ProfileSettingsView: View {
                     }
                     .padding()
                 }
-                .navigationTitle("Settings")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Done") {
-                            dismiss()
-                        }
-                    }
-                }
                 .alert("Delete Account", isPresented: $showDeleteAlert) {
                     Button("Cancel", role: .cancel) { }
                     Button("Delete", role: .destructive) {
@@ -310,13 +301,13 @@ struct ProfileSettingsView: View {
 
     
     private func openPrivacyPolicy() {
-        if let url = URL(string: "https://caffeinesocialclub.com/privacy") {
+        if let url = URL(string: "https://www.termsfeed.com/live/d2b258b6-8209-4c97-a065-1cdf60b35e72") {
             UIApplication.shared.open(url)
         }
     }
     
     private func openTermsOfService() {
-        if let url = URL(string: "https://caffeinesocialclub.com/terms") {
+        if let url = URL(string: "https://www.termsfeed.com/live/d2b258b6-8209-4c97-a065-1cdf60b35e72") {
             UIApplication.shared.open(url)
         }
     }

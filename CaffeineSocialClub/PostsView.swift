@@ -238,6 +238,21 @@ struct PostCard: View {
                 Spacer()
             }
             .padding(.top, 8)
+            
+            HStack{
+                Text("Write Comment")
+                    .font(.caption)
+                    .foregroundStyle(Color.gray)
+                Spacer()
+            }.padding(.horizontal)
+                .padding(.vertical, 5)
+                .background(
+                    RoundedRectangle(cornerRadius: 30)
+                        .foregroundStyle(Color.white)
+                )
+                .onTapGesture {
+                    showComments.toggle()
+                }
         }
         .padding()
         .background(Color(.systemGray6))

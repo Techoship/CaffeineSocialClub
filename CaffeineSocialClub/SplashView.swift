@@ -15,6 +15,8 @@ struct SplashView: View {
     @State private var showWebView = false
     @State private var navigateToApp = false
     @State private var navigateToLogin = false
+    @State private var showTermsAcceptance = false
+    @State private var hasAcceptedTerms = false
     
     private let database = Database.database().reference()
     private let remoteConfig = RemoteConfig.remoteConfig()
@@ -37,6 +39,8 @@ struct SplashView: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .brown))
                         .scaleEffect(1.5)
                 }
+            } else if showTermsAcceptance {
+                TermsAcceptanceView(hasAcceptedTerms: $hasAcceptedTerms)
             } else if showWebView {
                 WebPageView()
             } else if navigateToApp {
@@ -44,7 +48,14 @@ struct SplashView: View {
             } else if navigateToLogin {
                 SignupLoginView()
             }
-        }
+        }.onChange(of: hasAcceptedTerms, initial: hasAcceptedTerms, { oldValue, newValue in
+            if newValue {
+                // User accepted terms, proceed to auth check
+                showTermsAcceptance = false
+                checkAuthState()
+            }
+            
+        })
         .onAppear {
             configureRemoteConfig()
             checkSettings()
@@ -90,7 +101,16 @@ struct SplashView: View {
                 navigateToApp = false
                 navigateToLogin = false
             } else {
-                checkAuthState()
+                // Check if user has accepted terms
+                let hasAccepted = UserDefaults.standard.bool(forKey: "hasAcceptedTerms")
+                
+                if !hasAccepted {
+                    // Show terms acceptance first
+                    showTermsAcceptance = true
+                } else {
+                    // Terms already accepted, proceed to auth check
+                    checkAuthState()
+                }
             }
             isLoading = false
         }

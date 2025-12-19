@@ -68,10 +68,14 @@ struct Post: Identifiable, Codable {
 
 struct PostsView: View {
     @State private var posts: [Post] = []
+    @State private var allPosts: [Post] = []
     @State private var isLoading = true
     @State private var showCreatePost = false
     
     private let database = Database.database().reference()
+    private var currentUserId: String {
+        UserDefaults.standard.string(forKey: "userId") ?? ""
+    }
     
     var body: some View {
         ZStack {
@@ -162,8 +166,16 @@ struct PostsView: View {
                 }
             }
             
-            self.posts = loadedPosts.sorted { $0.timestamp > $1.timestamp }
-            self.isLoading = false
+            self.allPosts = loadedPosts.sorted { $0.timestamp > $1.timestamp }
+            
+            // Filter out posts from blocked users
+            ContentModerationManager.shared.filterBlockedContent(
+                posts: self.allPosts,
+                currentUserId: self.currentUserId
+            ) { filteredPosts in
+                self.posts = filteredPosts
+                self.isLoading = false
+            }
         }
     }
 }
@@ -173,6 +185,9 @@ struct PostCard: View {
     @State private var isLiked = false
     @State private var likeCount: Int
     @State private var showComments = false
+    @State private var showReportSheet = false
+    @State private var showBlockAlert = false
+    @State private var isBlocked = false
     
     private let database = Database.database().reference()
     private var currentUserId: String {
@@ -207,6 +222,27 @@ struct PostCard: View {
                 }
                 
                 Spacer()
+                
+                // More options menu
+                if post.userId != currentUserId {
+                    Menu {
+                        Button(role: .destructive) {
+                            showReportSheet = true
+                        } label: {
+                            Label("Report Post", systemImage: "flag")
+                        }
+                        
+                        Button(role: .destructive) {
+                            showBlockAlert = true
+                        } label: {
+                            Label("Block User", systemImage: "person.slash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .foregroundColor(.gray)
+                            .padding(8)
+                    }
+                }
             }
             
             // Post Content
@@ -260,8 +296,45 @@ struct PostCard: View {
         .sheet(isPresented: $showComments) {
             CommentsView(postId: post.postId)
         }
+        .sheet(isPresented: $showReportSheet) {
+            ReportContentView(reportType: .post(postId: post.postId))
+        }
+        .alert("Block User", isPresented: $showBlockAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Block", role: .destructive) {
+                blockUser()
+            }
+        } message: {
+            Text("Are you sure you want to block \(post.userName)? You won't see their posts or comments anymore.")
+        }
         .onAppear {
             checkIfLiked()
+            checkIfBlocked()
+        }
+    }
+    
+    private func checkIfBlocked() {
+        guard !currentUserId.isEmpty else { return }
+        
+        ContentModerationManager.shared.isUserBlocked(
+            userId: post.userId,
+            blockedBy: currentUserId
+        ) { blocked in
+            isBlocked = blocked
+        }
+    }
+    
+    private func blockUser() {
+        guard !currentUserId.isEmpty else { return }
+        
+        ContentModerationManager.shared.blockUser(
+            blockedUserId: post.userId,
+            blockedBy: currentUserId
+        ) { success, message in
+            if success {
+                isBlocked = true
+                // Post will be filtered out on next refresh
+            }
         }
     }
     

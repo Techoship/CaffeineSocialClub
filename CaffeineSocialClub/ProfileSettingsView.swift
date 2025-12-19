@@ -22,6 +22,7 @@ struct ProfileSettingsView: View {
     
     @State private var exportedFileURL: URL?
     @State private var showShareSheet = false
+    @State private var showBlockedUserSheet = false
     
     private let database = Database.database().reference()
     
@@ -106,6 +107,23 @@ struct ProfileSettingsView: View {
                                 .padding(.bottom, 8)
                             
                             VStack(spacing: 0) {
+                                // Blocked Users
+                                Button {
+                                    showBlockedUserSheet.toggle()
+                                } label: {
+                                    SettingRow(
+                                        icon: "person.slash.fill",
+                                        title: "Blocked Users",
+                                        value: "",
+                                        color: .orange,
+                                        showChevron: true
+                                    )
+                                }
+
+                                
+                                Divider()
+                                    .padding(.leading, 60)
+                                
                                 // Download Data
                                 Button(action: downloadUserData) {
                                     SettingRow(
@@ -231,6 +249,11 @@ struct ProfileSettingsView: View {
                         
                     }
                 }
+            }.sheet(isPresented: $showBlockedUserSheet) {
+                Group {
+                    BlockedUsersView()
+                        .presentationDetents([.medium, .large])
+                }
             }
 
 
@@ -245,6 +268,7 @@ struct ProfileSettingsView: View {
         }
         return "U"
     }
+    
     
     private func downloadUserData() {
         guard let userId = currentUser?.userId else { return }
@@ -301,13 +325,13 @@ struct ProfileSettingsView: View {
 
     
     private func openPrivacyPolicy() {
-        if let url = URL(string: "https://www.termsfeed.com/live/d2b258b6-8209-4c97-a065-1cdf60b35e72") {
+        if let url = URL(string: "https://sites.google.com/view/caffeine-social-club-privacy/home") {
             UIApplication.shared.open(url)
         }
     }
     
     private func openTermsOfService() {
-        if let url = URL(string: "https://www.termsfeed.com/live/d2b258b6-8209-4c97-a065-1cdf60b35e72") {
+        if let url = URL(string: "https://sites.google.com/view/caffeine-social-club-tos/home") {
             UIApplication.shared.open(url)
         }
     }

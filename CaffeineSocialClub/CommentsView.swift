@@ -205,6 +205,11 @@ struct CommentsView: View {
 
 struct CommentRow: View {
     let comment: Comment
+    @State private var showReportSheet = false
+    
+    private var currentUserId: String {
+        UserDefaults.standard.string(forKey: "userId") ?? ""
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -226,11 +231,31 @@ struct CommentRow: View {
                     Text(comment.timeAgo)
                         .font(.caption)
                         .foregroundColor(.gray)
+                    
+                    Spacer()
+                    
+                    // Report option for comments not by current user
+                    if comment.userId != currentUserId {
+                        Menu {
+                            Button(role: .destructive) {
+                                showReportSheet = true
+                            } label: {
+                                Label("Report Comment", systemImage: "flag")
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .foregroundColor(.gray)
+                                .font(.caption)
+                        }
+                    }
                 }
                 
                 Text(comment.text)
                     .font(.body)
             }
+        }
+        .sheet(isPresented: $showReportSheet) {
+            ReportContentView(reportType: .comment(postId: comment.postId, commentId: comment.commentId))
         }
     }
 }

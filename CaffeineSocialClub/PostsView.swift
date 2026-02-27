@@ -100,7 +100,7 @@ struct PostsView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding()
-                            .background(Color.brown)
+                            .background(Color.accentColor)
                             .cornerRadius(10)
                     }
                     .padding(.top, 20)
@@ -127,7 +127,7 @@ struct PostsView: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.white)
                             .frame(width: 60, height: 60)
-                            .background(Color.brown)
+                            .background(Color.accent)
                             .clipShape(Circle())
                             .shadow(color: Color.black.opacity(0.3), radius: 5, x: 0, y: 3)
                     }
@@ -189,6 +189,7 @@ struct PostCard: View {
     @State private var showBlockAlert = false
     @State private var isBlocked = false
     
+    
     private let database = Database.database().reference()
     private var currentUserId: String {
         UserDefaults.standard.string(forKey: "userId") ?? ""
@@ -204,12 +205,12 @@ struct PostCard: View {
             // User Info
             HStack {
                 Circle()
-                    .fill(Color.brown.opacity(0.3))
+                    .fill(Color.accentColor.opacity(0.3))
                     .frame(width: 40, height: 40)
                     .overlay(
                         Text(String(post.userName.prefix(1).uppercased()))
                             .font(.headline)
-                            .foregroundColor(.brown)
+                            .foregroundColor(.accentColor)
                     )
                 
                 VStack(alignment: .leading, spacing: 2) {
@@ -305,7 +306,7 @@ struct PostCard: View {
                 blockUser()
             }
         } message: {
-            Text("Are you sure you want to block \(post.userName)? You won't see their posts or comments anymore.")
+            Text("Are you sure you want to block \(post.userName)?")
         }
         .onAppear {
             checkIfLiked()

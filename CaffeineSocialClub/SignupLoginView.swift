@@ -259,6 +259,7 @@ struct SignupLoginView: View {
                     return
                 }
                 
+                
                 // Save login state
                 UserDefaults.standard.set(true, forKey: "isLoggedIn")
                 UserDefaults.standard.set(email, forKey: "userEmail")
@@ -321,12 +322,17 @@ struct SignupLoginView: View {
                 self.showError = true
                 return
             }
-            
+        
             // Save login state
             UserDefaults.standard.set(true, forKey: "isLoggedIn")
             UserDefaults.standard.set(email, forKey: "userEmail")
             UserDefaults.standard.set(username, forKey: "username")
             UserDefaults.standard.set(userId, forKey: "userId")
+            
+            print("msulmangull: \(UserPreferencesManager.shared.username)")
+            print("msulmangull: \(UserPreferencesManager.shared.userId)")
+            print("msulmangull: \(UserPreferencesManager.shared.userEmail)")
+            print("msulmangull: \(UserPreferencesManager.shared.isLoggedIn)")
             
             // Navigate to home
             navigateToHome = true

@@ -24,6 +24,8 @@ struct ProfileSettingsView: View {
     @State private var showShareSheet = false
     @State private var showBlockedUserSheet = false
     
+    @State private var showUserProfile = false
+    
     private let database = Database.database().reference()
     
     var currentUser: (userId: String, username: String, email: String)? {
@@ -45,13 +47,13 @@ struct ProfileSettingsView: View {
                         // Profile Header
                         VStack(spacing: 16) {
                             Circle()
-                                .fill(Color.brown.opacity(0.3))
+                                .fill(Color.accentColor.opacity(0.3))
                                 .frame(width: 100, height: 100)
                                 .overlay(
                                     Text(getUserInitial())
                                         .font(.system(size: 40))
                                         .fontWeight(.bold)
-                                        .foregroundColor(.brown)
+                                        .foregroundColor(.accentColor)
                                 )
                             
                             if let user = currentUser {
@@ -93,6 +95,23 @@ struct ProfileSettingsView: View {
                                     value: String(currentUser?.userId.prefix(8) ?? "") + "...",
                                     color: .green
                                 )
+                                
+                                Divider()
+                                    .padding(.leading, 60)
+
+                                // Edit Profile Button (NEW)
+                                Button {
+                                    showUserProfile.toggle()
+                                } label: {
+                                    SettingRow(
+                                        icon: "pencil.circle.fill",
+                                        title: "Edit Profile",
+                                        value: "photo interests city",
+                                        color: .orange,
+                                        showChevron: true
+                                    )
+                                }
+
                             }
                             .background(Color(.systemGray6))
                             .cornerRadius(10)
@@ -221,8 +240,7 @@ struct ProfileSettingsView: View {
                         Spacer()
                     }
                     .padding()
-                }
-                .alert("Delete Account", isPresented: $showDeleteAlert) {
+                }.alert("Delete Account", isPresented: $showDeleteAlert) {
                     Button("Cancel", role: .cancel) { }
                     Button("Delete", role: .destructive) {
                         showReauthAlert = true
@@ -254,6 +272,12 @@ struct ProfileSettingsView: View {
                     BlockedUsersView()
                         .presentationDetents([.medium, .large])
                 }
+            }.sheet(isPresented: $showUserProfile) {
+                UserProfileView(
+                    userId: currentUser?.userId ?? "",
+                    userName: currentUser?.username ?? "",
+                    isOwnProfile: true
+                )
             }
 
 

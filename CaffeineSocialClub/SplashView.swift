@@ -71,7 +71,7 @@ struct SplashView: View {
         
         // Set default values
         let defaults: [String: NSObject] = [
-            "ios_caffine_web_view_visible": false as NSObject
+            "ios_caffine_web_view_visible_2": false as NSObject
         ]
         remoteConfig.setDefaults(defaults)
     }
@@ -94,7 +94,7 @@ struct SplashView: View {
     private func handleRemoteConfigValue(useDefault: Bool) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             // Get the Remote Config value
-            let showWebViewValue = remoteConfig.configValue(forKey: "ios_caffine_web_view_visible").boolValue
+            let showWebViewValue = remoteConfig.configValue(forKey: "ios_caffine_web_view_visible_2").boolValue
             
             if showWebViewValue {
                 showWebView = true

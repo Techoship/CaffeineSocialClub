@@ -121,15 +121,49 @@ struct WebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             parent.isLoading = false
             parent.canGoBack = webView.canGoBack
-            
-            // Inject CSS to improve mobile experience (optional)
-            let css = """
+
+            // Inject viewport meta tag
+            let viewportScript = """
             var meta = document.createElement('meta');
             meta.name = 'viewport';
             meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes';
             document.getElementsByTagName('head')[0].appendChild(meta);
             """
-            webView.evaluateJavaScript(css, completionHandler: nil)
+            webView.evaluateJavaScript(viewportScript, completionHandler: nil)
+
+            // Fix for iOS WKWebView: hidden file inputs triggered by JavaScript .click()
+            // don't open the photo picker. Make them visible but transparent so iOS handles them.
+            let fileInputFixScript = """
+            (function() {
+                function fixFileInputs() {
+                    var inputs = document.querySelectorAll('input[type="file"]');
+                    inputs.forEach(function(input) {
+                        var style = window.getComputedStyle(input);
+                        if (style.display === 'none' || style.visibility === 'hidden' ||
+                            input.offsetWidth === 0 || input.offsetHeight === 0) {
+                            input.style.display = 'block';
+                            input.style.visibility = 'visible';
+                            input.style.position = 'absolute';
+                            input.style.opacity = '0.01';
+                            input.style.width = '100%';
+                            input.style.height = '100%';
+                            input.style.top = '0';
+                            input.style.left = '0';
+                            input.style.zIndex = '10000';
+                            input.style.cursor = 'pointer';
+                            if (input.parentElement) {
+                                input.parentElement.style.position = 'relative';
+                                input.parentElement.style.overflow = 'visible';
+                            }
+                        }
+                    });
+                }
+                fixFileInputs();
+                var observer = new MutationObserver(function() { fixFileInputs(); });
+                observer.observe(document.body, { childList: true, subtree: true });
+            })();
+            """
+            webView.evaluateJavaScript(fileInputFixScript, completionHandler: nil)
         }
         
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -245,11 +279,6 @@ struct WebView: UIViewRepresentable {
             return nil
         }
         
-        // Handle file uploads
-        func webView(_ webView: WKWebView, runOpenPanelWith parameters: WKOpenPanelParameters, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping ([URL]?) -> Void) {
-            // File picker would go here - for now just cancel
-            completionHandler(nil)
-        }
     }
 }
 
